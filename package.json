@@ -27,5 +27,9 @@
   "homepage": "https://github.com/kyuyk816/whisker#readme",
   "devDependencies": {
     "nodemon": "^3.1.10"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "mysql2": "^3.14.3"
   }
 }

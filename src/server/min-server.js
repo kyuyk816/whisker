@@ -11,24 +11,26 @@ const sendJson = (res, status, body) => {
     res.end(data);
 };
 
-const server = http.createServer(async (requestAnimationFrame, res) => {
-    const url = new URL(req.url, `http://${req.headers.host}`);
+const server = http.createServer(async (req, res) => {
+    try{
+        const url = new URL(req.url, `http://${req.headers.host}`); 
+        const pathname = (decodeURIComponent(url.pathname).toLowerCase().replace(/\/+$/, '')) || '/'; // Normalize path
+        console.log(req.method, pathname); // Quick debug log
 
-    if(req.method === 'GET' && url.pathname === '/healkh/db'){
-        const started = Date.now();
-        try{
+        if(req.method === 'GET' && pathname === '/health/db'){
+            const started = Date.now();
             const [rows] = await pool.query('SELECT 1 AS ok');
             const latencyMs = Date.now() - started;
             return sendJson(res, 200, { ok: true, db: rows[0].ok === 1, latencyMs });
-        }catch(err){
-            return sendJson(res, 500, { ok: false, error: err.message });
         }
-    }
 
     // default: 404 JSON
-    sendJson(res, 404, { ok: false, error: 'Not Found' });
+        return sendJson(res, 404, { ok: false, error: 'Not Found', saw: { method: req.method, path: pathname }});
+    }catch(err){
+        return sendJson(res, 500, { ok: false, error: err.message });
+    }
 });
 
 server.listen(PORT, () => {
-    console.log(`HTTP server listening on http://localhost:${PORT}`);
+    console.log(`[MIN-SERVER] listening on http://localhost:${PORT} (file: src/server/min-server.js)`);
 });

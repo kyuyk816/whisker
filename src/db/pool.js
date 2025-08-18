@@ -25,4 +25,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { pool };
+module.exports = pool;
